@@ -1,29 +1,18 @@
 
 import { useTaskStore } from './store/taskStore';
-import { AddTaskForm } from './components/AddTaskForm';
-import { TaskList } from './components/TaskList';
+import { EnhancedAddTaskForm } from './components/tasks/EnhancedAddTaskForm';
+import { EnhancedTaskList } from './components/tasks/EnhancedTaskList';
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 function App() {
     const {
         tasks,
-        addTask: storeAddTask,
         updateTask,
         deleteTask: storeDeleteTask,
         toggleTaskComplete,
         clearCompleted: storeClearCompleted,
         getTaskStats
     } = useTaskStore();
-
-    const addTask = (text: string) => {
-        storeAddTask({
-            text,
-            completed: false,
-            priority: 'medium',
-            tags: [],
-            subtasks: [],
-        });
-    };
 
     const toggleComplete = (id: string) => {
         toggleTaskComplete(id);
@@ -61,9 +50,9 @@ function App() {
 
                 {/* Main Content */}
                 <main className="bg-white rounded-xl shadow-lg p-6">
-                    <AddTaskForm onAddTask={addTask} />
+                    <EnhancedAddTaskForm />
 
-                    <TaskList
+                    <EnhancedTaskList
                         tasks={tasks}
                         onToggleComplete={toggleComplete}
                         onEditTask={editTask}

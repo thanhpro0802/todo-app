@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* React DatePicker custom styles */
+.react-datepicker {
+  @apply bg-white border border-gray-300 rounded-lg shadow-lg;
+}
+
+.react-datepicker__header {
+  @apply bg-blue-500 border-b border-gray-300 rounded-t-lg;
+}
+
+.react-datepicker__current-month {
+  @apply text-white font-semibold;
+}
+
+.react-datepicker__day-name {
+  @apply text-white text-xs;
+}
+
+.react-datepicker__day {
+  @apply hover:bg-blue-100 rounded;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.react-datepicker__day--today {
+  @apply bg-blue-100 text-blue-800 font-semibold;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply bg-blue-200;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -39,4 +72,9 @@
 /* Focus styles */
 .focus-ring {
   @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none;
+}
+
+/* Group hover effects */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
 }
