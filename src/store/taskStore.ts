@@ -59,9 +59,11 @@ export const useTaskStore = create<TaskStore>()(
 
       // Actions
       addTask: (taskData) => {
+        const tasks = get().tasks;
         const newTask: Task = {
           ...taskData,
           id: Date.now().toString(),
+          order: tasks.filter(t => !t.completed).length, // Add to end of pending tasks
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -195,8 +197,14 @@ export const useTaskStore = create<TaskStore>()(
               bValue = b.text.toLowerCase();
               break;
             default:
-              aValue = a[state.sortBy];
-              bValue = b[state.sortBy];
+              // For createdAt and updatedAt, use order if available, otherwise use the date
+              if (state.sortBy === 'createdAt' && (a.order !== undefined || b.order !== undefined)) {
+                aValue = a.order ?? 9999;
+                bValue = b.order ?? 9999;
+              } else {
+                aValue = a[state.sortBy];
+                bValue = b[state.sortBy];
+              }
           }
 
           if (aValue < bValue) return state.sortDirection === 'asc' ? -1 : 1;

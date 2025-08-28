@@ -18,6 +18,7 @@ export interface Task {
     timeEstimation?: number; // in minutes
     timeSpent?: number; // in minutes
     subtasks: Subtask[];
+    order?: number; // for drag & drop ordering
     createdAt: Date;
     updatedAt: Date;
     completedAt?: Date;

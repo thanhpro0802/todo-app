@@ -1,7 +1,7 @@
 
 import { useTaskStore } from './store/taskStore';
 import { EnhancedAddTaskForm } from './components/tasks/EnhancedAddTaskForm';
-import { EnhancedTaskList } from './components/tasks/EnhancedTaskList';
+import { DraggableTaskList } from './components/tasks/DraggableTaskList';
 import { TaskToolbar } from './components/tasks/TaskToolbar';
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
@@ -57,7 +57,7 @@ function App() {
 
                     <TaskToolbar className="mb-6" />
 
-                    <EnhancedTaskList
+                    <DraggableTaskList
                         tasks={tasks}
                         onToggleComplete={toggleComplete}
                         onEditTask={editTask}
