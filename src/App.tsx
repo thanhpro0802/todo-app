@@ -1,12 +1,15 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTaskStore } from './store/taskStore';
+import { useAuthStore } from './store/authStore';
 import { EnhancedAddTaskForm } from './components/tasks/EnhancedAddTaskForm';
 import { DraggableTaskList } from './components/tasks/DraggableTaskList';
 import { TaskToolbar } from './components/tasks/TaskToolbar';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { QuickStats } from './components/dashboard/QuickStats';
 import { AnimatedContainer } from './components/ui/Animations';
+import { UserMenu } from './components/profile/UserMenu';
+import { AuthContainer } from './components/auth/AuthContainer';
 import { ClipboardDocumentListIcon, CommandLineIcon } from '@heroicons/react/24/outline';
 
 function App() {
@@ -16,11 +19,34 @@ function App() {
         toggleTaskComplete,
         clearCompleted: storeClearCompleted,
         getTaskStats,
-        getFilteredTasks
+        getFilteredTasks,
+        setCurrentUser,
+        clearUserData
     } = useTaskStore();
+
+    const { user, isAuthenticated, logout, checkAuthStatus } = useAuthStore();
 
     const addTaskFormRef = useRef<HTMLDivElement>(null);
     const [showKeyboardHelp, setShowKeyboardHelp] = React.useState(false);
+
+    // Check authentication status on app load
+    useEffect(() => {
+        checkAuthStatus();
+    }, [checkAuthStatus]);
+
+    // Set current user in task store when user changes
+    useEffect(() => {
+        if (user?.id) {
+            setCurrentUser(user.id);
+        } else {
+            clearUserData();
+        }
+    }, [user?.id, setCurrentUser, clearUserData]);
+
+    // If not authenticated, show auth forms
+    if (!isAuthenticated || !user) {
+        return <AuthContainer />;
+    }
 
     const tasks = getFilteredTasks();
 
@@ -54,39 +80,53 @@ function App() {
             <div className="container mx-auto px-4 py-8 max-w-6xl">
                 {/* Header */}
                 <AnimatedContainer>
-                    <header className="text-center mb-8">
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <ClipboardDocumentListIcon className="w-8 h-8 text-blue-500" />
-                            <h1 className="text-3xl font-bold text-gray-800">
-                                Todo App Pro
-                            </h1>
-                        </div>
-                        <p className="text-gray-600 mb-4">
-                            Quản lý công việc hàng ngày một cách hiệu quả và chuyên nghiệp
-                        </p>
-                        
-                        {/* Keyboard shortcuts help */}
-                        <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-                            <button
-                                onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                                className="flex items-center gap-1 hover:text-gray-700 transition-colors"
-                            >
-                                <CommandLineIcon className="w-4 h-4" />
-                                Phím tắt
-                            </button>
-                        </div>
-                        
-                        {showKeyboardHelp && (
-                            <div className="mt-4 p-4 bg-white rounded-lg shadow border text-left max-w-md mx-auto">
-                                <h3 className="font-semibold mb-2">Phím tắt hữu ích:</h3>
-                                <div className="space-y-1 text-xs">
-                                    <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + N</kbd> - Thêm task mới</div>
-                                    <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + F</kbd> - Tìm kiếm</div>
-                                    <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + Shift + D</kbd> - Xóa hoàn thành</div>
-                                    <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Esc</kbd> - Xóa tìm kiếm</div>
+                    <header className="mb-8">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <ClipboardDocumentListIcon className="w-8 h-8 text-blue-500" />
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-800">
+                                        Todo App Pro
+                                    </h1>
+                                    <p className="text-sm text-gray-600">
+                                        Xin chào, {user.firstName}! 👋
+                                    </p>
                                 </div>
                             </div>
-                        )}
+                            <UserMenu 
+                                onLogout={logout}
+                                onShowProfile={() => console.log('Show profile')}
+                            />
+                        </div>
+                        
+                        <div className="text-center">
+                            <p className="text-gray-600 mb-4">
+                                Quản lý công việc hàng ngày một cách hiệu quả và chuyên nghiệp
+                            </p>
+                            
+                            {/* Keyboard shortcuts help */}
+                            <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                                <button
+                                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+                                    className="flex items-center gap-1 hover:text-gray-700 transition-colors"
+                                >
+                                    <CommandLineIcon className="w-4 h-4" />
+                                    Phím tắt
+                                </button>
+                            </div>
+                            
+                            {showKeyboardHelp && (
+                                <div className="mt-4 p-4 bg-white rounded-lg shadow border text-left max-w-md mx-auto">
+                                    <h3 className="font-semibold mb-2">Phím tắt hữu ích:</h3>
+                                    <div className="space-y-1 text-xs">
+                                        <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + N</kbd> - Thêm task mới</div>
+                                        <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + F</kbd> - Tìm kiếm</div>
+                                        <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Ctrl/Cmd + Shift + D</kbd> - Xóa hoàn thành</div>
+                                        <div><kbd className="px-1 py-0.5 bg-gray-100 rounded">Esc</kbd> - Xóa tìm kiếm</div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </header>
                 </AnimatedContainer>
 

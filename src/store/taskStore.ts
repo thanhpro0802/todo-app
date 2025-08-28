@@ -13,9 +13,10 @@ interface TaskStore {
   selectedPriority: Priority | null;
   sortBy: 'createdAt' | 'updatedAt' | 'dueDate' | 'priority' | 'text';
   sortDirection: 'asc' | 'desc';
+  currentUserId: string | null; // Track current user
   
   // Actions
-  addTask: (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addTask: (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'userId'>, userId: string) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   toggleTaskComplete: (id: string) => void;
@@ -29,6 +30,8 @@ interface TaskStore {
   setSelectedCategory: (categoryId: string | null) => void;
   setSelectedPriority: (priority: Priority | null) => void;
   setSorting: (sortBy: string, direction: 'asc' | 'desc') => void;
+  setCurrentUser: (userId: string | null) => void; // Set current user
+  clearUserData: () => void; // Clear data when user logs out
   
   // Computed
   getFilteredTasks: () => Task[];
@@ -38,6 +41,8 @@ interface TaskStore {
     completed: number;
     pending: number;
     overdue: number;
+    today: number;
+    urgent: number;
   };
 }
 
@@ -56,13 +61,15 @@ export const useTaskStore = create<TaskStore>()(
       selectedPriority: null,
       sortBy: 'createdAt',
       sortDirection: 'desc',
+      currentUserId: null,
 
       // Actions
-      addTask: (taskData) => {
-        const tasks = get().tasks;
+      addTask: (taskData, userId) => {
+        const tasks = get().tasks.filter(t => t.userId === userId);
         const newTask: Task = {
           ...taskData,
           id: Date.now().toString(),
+          userId,
           order: tasks.filter(t => !t.completed).length, // Add to end of pending tasks
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -102,8 +109,11 @@ export const useTaskStore = create<TaskStore>()(
       },
 
       clearCompleted: () => {
+        const { currentUserId } = get();
         set((state) => ({
-          tasks: state.tasks.filter((task) => !task.completed),
+          tasks: state.tasks.filter((task) => 
+            task.completed ? task.userId !== currentUserId : true
+          ),
         }));
       },
 
@@ -152,10 +162,24 @@ export const useTaskStore = create<TaskStore>()(
         set({ sortBy: sortBy as any, sortDirection: direction });
       },
 
+      setCurrentUser: (userId) => {
+        set({ currentUserId: userId });
+      },
+
+      clearUserData: () => {
+        set({
+          searchQuery: '',
+          selectedCategory: null,
+          selectedPriority: null,
+          currentUserId: null,
+        });
+      },
+
       // Computed
       getFilteredTasks: () => {
         const state = get();
-        let filtered = [...state.tasks];
+        // Only show tasks for current user
+        let filtered = state.tasks.filter(task => task.userId === state.currentUserId);
 
         // Apply search filter
         if (state.searchQuery) {
@@ -216,21 +240,41 @@ export const useTaskStore = create<TaskStore>()(
       },
 
       getTasksByCategory: (categoryId) => {
-        return get().tasks.filter((task) => task.category === categoryId);
+        const { currentUserId } = get();
+        return get().tasks.filter((task) => 
+          task.category === categoryId && task.userId === currentUserId
+        );
       },
 
       getTaskStats: () => {
-        const tasks = get().tasks;
+        const { tasks, currentUserId } = get();
+        const userTasks = tasks.filter(task => task.userId === currentUserId);
         const now = new Date();
-        const overdue = tasks.filter(
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        
+        const overdue = userTasks.filter(
           (task) => !task.completed && task.dueDate && task.dueDate < now
+        ).length;
+        
+        const todayTasks = userTasks.filter(
+          (task) => !task.completed && task.dueDate && 
+          task.dueDate >= today && task.dueDate < tomorrow
+        ).length;
+        
+        const urgentTasks = userTasks.filter(
+          (task) => !task.completed && task.priority === 'urgent'
         ).length;
 
         return {
-          total: tasks.length,
-          completed: tasks.filter((task) => task.completed).length,
-          pending: tasks.filter((task) => !task.completed).length,
+          total: userTasks.length,
+          completed: userTasks.filter((task) => task.completed).length,
+          pending: userTasks.filter((task) => !task.completed).length,
           overdue,
+          today: todayTasks,
+          urgent: urgentTasks,
         };
       },
     }),

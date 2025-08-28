@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import { Priority } from '../../types/Task';
 import { PrioritySelector } from '../ui/PrioritySelector';
 import { useTaskStore } from '../../store/taskStore';
+import { useAuthStore } from '../../store/authStore';
 import 'react-datepicker/dist/react-datepicker.css';
 
 interface EnhancedAddTaskFormProps {
@@ -12,6 +13,7 @@ interface EnhancedAddTaskFormProps {
 
 export const EnhancedAddTaskForm: React.FC<EnhancedAddTaskFormProps> = ({ onAddTask }) => {
   const { addTask, categories } = useTaskStore();
+  const { user } = useAuthStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [taskData, setTaskData] = useState({
     text: '',
@@ -26,7 +28,7 @@ export const EnhancedAddTaskForm: React.FC<EnhancedAddTaskFormProps> = ({ onAddT
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!taskData.text.trim()) return;
+    if (!taskData.text.trim() || !user?.id) return;
 
     const newTask = {
       text: taskData.text.trim(),
@@ -43,7 +45,7 @@ export const EnhancedAddTaskForm: React.FC<EnhancedAddTaskFormProps> = ({ onAddT
     if (onAddTask) {
       onAddTask(newTask);
     } else {
-      addTask(newTask);
+      addTask(newTask, user.id);
     }
 
     // Reset form
