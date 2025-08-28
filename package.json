@@ -1,7 +1,8 @@
 {
-  "name": "todo-app-react-ts",
+  "name": "todo-app-pro",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Professional Todo App with advanced features",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -32,5 +33,15 @@
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
-  }
+  },
+  "keywords": [
+    "todo",
+    "task-manager",
+    "react",
+    "typescript",
+    "tailwind",
+    "drag-drop",
+    "productivity"
+  ],
+  "author": "Todo App Pro Team"
 }
