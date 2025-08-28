@@ -3,18 +3,13 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { AddTaskForm } from './components/AddTaskForm';
 import { TaskList } from './components/TaskList';
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { createQuickTask } from './utils/taskUtils';
 
 function App() {
     const [tasks, setTasks] = useLocalStorage<Task[]>('todo-tasks', []);
 
     const addTask = (text: string) => {
-        const newTask: Task = {
-            id: Date.now().toString(),
-            text,
-            completed: false,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
+        const newTask = createQuickTask(text);
         setTasks([...tasks, newTask]);
     };
 
