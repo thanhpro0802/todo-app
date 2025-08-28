@@ -2,17 +2,20 @@
 import { useTaskStore } from './store/taskStore';
 import { EnhancedAddTaskForm } from './components/tasks/EnhancedAddTaskForm';
 import { EnhancedTaskList } from './components/tasks/EnhancedTaskList';
+import { TaskToolbar } from './components/tasks/TaskToolbar';
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 function App() {
     const {
-        tasks,
         updateTask,
         deleteTask: storeDeleteTask,
         toggleTaskComplete,
         clearCompleted: storeClearCompleted,
-        getTaskStats
+        getTaskStats,
+        getFilteredTasks
     } = useTaskStore();
+
+    const tasks = getFilteredTasks();
 
     const toggleComplete = (id: string) => {
         toggleTaskComplete(id);
@@ -51,6 +54,8 @@ function App() {
                 {/* Main Content */}
                 <main className="bg-white rounded-xl shadow-lg p-6">
                     <EnhancedAddTaskForm />
+
+                    <TaskToolbar className="mb-6" />
 
                     <EnhancedTaskList
                         tasks={tasks}
