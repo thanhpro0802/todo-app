@@ -1,49 +1,47 @@
 
-import { Task } from './types/Task';
-import { useLocalStorage } from './hooks/useLocalStorage';
+import { useTaskStore } from './store/taskStore';
 import { AddTaskForm } from './components/AddTaskForm';
 import { TaskList } from './components/TaskList';
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 function App() {
-    const [tasks, setTasks] = useLocalStorage<Task[]>('todo-tasks', []);
+    const {
+        tasks,
+        addTask: storeAddTask,
+        updateTask,
+        deleteTask: storeDeleteTask,
+        toggleTaskComplete,
+        clearCompleted: storeClearCompleted,
+        getTaskStats
+    } = useTaskStore();
 
     const addTask = (text: string) => {
-        const newTask: Task = {
-            id: Date.now().toString(),
+        storeAddTask({
             text,
             completed: false,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-        setTasks([...tasks, newTask]);
+            priority: 'medium',
+            tags: [],
+            subtasks: [],
+        });
     };
 
     const toggleComplete = (id: string) => {
-        setTasks(tasks.map(task =>
-            task.id === id
-                ? { ...task, completed: !task.completed, updatedAt: new Date() }
-                : task
-        ));
+        toggleTaskComplete(id);
     };
 
     const editTask = (id: string, newText: string) => {
-        setTasks(tasks.map(task =>
-            task.id === id
-                ? { ...task, text: newText, updatedAt: new Date() }
-                : task
-        ));
+        updateTask(id, { text: newText });
     };
 
     const deleteTask = (id: string) => {
-        setTasks(tasks.filter(task => task.id !== id));
+        storeDeleteTask(id);
     };
 
     const clearCompleted = () => {
-        setTasks(tasks.filter(task => !task.completed));
+        storeClearCompleted();
     };
 
-    const completedCount = tasks.filter(task => task.completed).length;
+    const stats = getTaskStats();
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -73,13 +71,13 @@ function App() {
                     />
 
                     {/* Clear Completed Button */}
-                    {completedCount > 0 && (
+                    {stats.completed > 0 && (
                         <div className="mt-6 pt-6 border-t border-gray-200">
                             <button
                                 onClick={clearCompleted}
                                 className="w-full py-2 px-4 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm font-medium"
                             >
-                                Xóa tất cả task đã hoàn thành ({completedCount})
+                                Xóa tất cả task đã hoàn thành ({stats.completed})
                             </button>
                         </div>
                     )}

@@ -9,12 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@heroicons/react": "^2.0.18",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.12",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-datepicker": "^8.7.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^3.1.2",
+    "zod": "^4.1.4",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
+    "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
