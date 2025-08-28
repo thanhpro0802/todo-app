@@ -1,4 +1,3 @@
-import React from 'react';
 import { Task } from './types/Task';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { AddTaskForm } from './components/AddTaskForm';
