@@ -4,8 +4,7 @@ import {
   CheckIcon,
   PencilIcon,
   TrashIcon,
-  XMarkIcon,
-  CheckCircleIcon
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 interface TaskItemProps {
