@@ -6,6 +6,9 @@ import { config } from '../config/index.js';
 // Import route modules
 import authRoutes from './auth.js';
 import taskRoutes from './tasks.js';
+import subtaskRoutes from './subtasks.js';
+import fileRoutes from './files.js';
+import teamRoutes from './teams.js';
 
 const swaggerOptions = {
   definition: {
@@ -64,6 +67,9 @@ export const setupRoutes = (app: Express) => {
   // API Routes
   app.use(`${apiPrefix}/auth`, authRoutes);
   app.use(`${apiPrefix}/tasks`, taskRoutes);
+  app.use(`${apiPrefix}/tasks`, subtaskRoutes);
+  app.use(`${apiPrefix}/files`, fileRoutes);
+  app.use(`${apiPrefix}/teams`, teamRoutes);
 
   // API Info endpoint
   app.get(`${apiPrefix}`, (req, res) => {
@@ -75,6 +81,9 @@ export const setupRoutes = (app: Express) => {
       endpoints: {
         auth: `${apiPrefix}/auth`,
         tasks: `${apiPrefix}/tasks`,
+        subtasks: `${apiPrefix}/tasks/:taskId/subtasks`,
+        files: `${apiPrefix}/files`,
+        teams: `${apiPrefix}/teams`,
       },
     });
   });

@@ -27,8 +27,23 @@ A comprehensive backend API for the Todo App with user management, authenticatio
 
 - **Team Features**
   - Team creation and management
-  - Role-based permissions
+  - Role-based permissions (Owner, Admin, Member, Viewer)
   - Team task sharing
+  - Invite code system
+  - Team member management
+
+- **File Upload & Management**
+  - Cloudinary integration for production
+  - Local storage for development
+  - File type validation
+  - File size limits
+  - Secure file deletion
+
+- **Subtask Management**
+  - Nested subtasks for complex tasks
+  - Drag & drop reordering
+  - Individual completion tracking
+  - Real-time updates
 
 - **Email System**
   - Welcome emails
@@ -52,12 +67,15 @@ A comprehensive backend API for the Todo App with user management, authenticatio
 - **Framework**: Node.js with Express.js
 - **Database**: SQLite (development) / PostgreSQL (production)
 - **ORM**: Prisma
-- **Authentication**: JWT
-- **Email**: Nodemailer
+- **Authentication**: JWT with refresh tokens
+- **Email**: Nodemailer with professional templates
+- **File Storage**: Cloudinary / Local storage
 - **Real-time**: Socket.io
-- **Validation**: Zod
+- **Validation**: Zod with comprehensive schemas
 - **Testing**: Jest with Supertest
-- **Documentation**: Swagger
+- **Documentation**: Swagger/OpenAPI
+- **Logging**: Winston with structured logging
+- **Security**: Rate limiting, CORS, Helmet
 
 ## 📁 Project Structure
 
@@ -66,7 +84,9 @@ backend/
 ├── src/
 │   ├── controllers/        # Route controllers
 │   │   ├── authController.ts
-│   │   └── taskController.ts
+│   │   ├── taskController.ts
+│   │   ├── subtaskController.ts
+│   │   └── teamController.ts
 │   ├── middleware/         # Auth, validation, error handling
 │   │   ├── auth.ts
 │   │   └── errorHandler.ts
@@ -74,9 +94,13 @@ backend/
 │   ├── routes/            # API route definitions
 │   │   ├── auth.ts
 │   │   ├── tasks.ts
+│   │   ├── subtasks.ts
+│   │   ├── teams.ts
+│   │   ├── files.ts
 │   │   └── index.ts
 │   ├── services/          # Business logic
-│   │   └── emailService.ts
+│   │   ├── emailService.ts
+│   │   └── fileUploadService.ts
 │   ├── utils/             # Helper functions
 │   │   ├── logger.ts
 │   │   ├── socket.ts
@@ -178,6 +202,28 @@ Once the server is running, visit:
 - `DELETE /api/v1/tasks/:id` - Delete task
 - `POST /api/v1/tasks/:id/share` - Share task with users
 - `DELETE /api/v1/tasks/:id/share/:userId` - Revoke task access
+
+### Subtasks
+- `POST /api/v1/tasks/:taskId/subtasks` - Create subtask
+- `PUT /api/v1/tasks/:taskId/subtasks/:id` - Update subtask
+- `DELETE /api/v1/tasks/:taskId/subtasks/:id` - Delete subtask
+- `POST /api/v1/tasks/:taskId/subtasks/reorder` - Reorder subtasks
+
+### Teams
+- `GET /api/v1/teams` - Get user teams
+- `POST /api/v1/teams` - Create new team
+- `POST /api/v1/teams/join` - Join team by invite code
+- `GET /api/v1/teams/:id` - Get specific team
+- `PUT /api/v1/teams/:id` - Update team
+- `DELETE /api/v1/teams/:id` - Delete team
+- `POST /api/v1/teams/:id/members` - Add team member
+- `PUT /api/v1/teams/:id/members/:memberId` - Update member role
+- `DELETE /api/v1/teams/:id/members/:memberId` - Remove team member
+- `POST /api/v1/teams/:id/leave` - Leave team
+
+### Files
+- `POST /api/v1/files/upload` - Upload file attachment
+- `DELETE /api/v1/files/:publicId` - Delete file
 
 ## 🔧 Environment Variables
 
