@@ -8,6 +8,7 @@ export interface Subtask {
 
 export interface Task {
     id: string;
+    userId: string; // Owner of the task
     text: string;
     description?: string;
     completed: boolean;
@@ -22,6 +23,7 @@ export interface Task {
     createdAt: Date;
     updatedAt: Date;
     completedAt?: Date;
+    sharedWith?: string[]; // Array of user IDs for shared tasks
 }
 
 export interface Category {
